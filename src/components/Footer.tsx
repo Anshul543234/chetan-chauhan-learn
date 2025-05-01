@@ -6,10 +6,8 @@ const Footer = () => {
   
   return (
     <footer className="bg-gray-900 text-white py-6">
-      <div className="container">
-        <div className="text-center">
-          <p>© {currentYear} All rights reserved © Chetan Chauhan</p>
-        </div>
+      <div className="container text-center">
+        <p>© {currentYear} All rights reserved © Chetan Chauhan</p>
       </div>
     </footer>
   );

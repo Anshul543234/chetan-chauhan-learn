@@ -5,9 +5,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import { clearBookingSelection } from "@/lib/bookingUtils";
 
 const BookingConfirmation = () => {
   const navigate = useNavigate();
+
+  // Clear booking data from session storage when confirmation page is loaded
+  useEffect(() => {
+    clearBookingSelection();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

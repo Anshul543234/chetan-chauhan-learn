@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { getStoredBookingSelection } from "@/lib/bookingUtils";
 
 const PaymentPage = () => {
   const [searchParams] = useSearchParams();
@@ -14,9 +15,16 @@ const PaymentPage = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const course = searchParams.get("course") || "Default Course";
-  const date = searchParams.get("date") || "Default Date";
-  const time = searchParams.get("time") || "Default Time";
+  // Get course, date, and time from URL parameters or session storage
+  const courseParam = searchParams.get("course");
+  const dateParam = searchParams.get("date");
+  const timeParam = searchParams.get("time");
+  
+  // First try from URL, then from session storage
+  const storedBooking = getStoredBookingSelection();
+  const course = courseParam || storedBooking.course || "Default Course";
+  const date = dateParam || storedBooking.date || "Default Date";
+  const time = timeParam || storedBooking.time || "Default Time";
 
   const validateEmail = (email: string) => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -41,7 +49,7 @@ const PaymentPage = () => {
 
     setIsSubmitting(true);
 
-    // Simulate payment and email sending
+    // Simulate email sending (in a real app, you would use EmailJS or a similar service)
     setTimeout(() => {
       toast.success("Payment confirmation email has been sent!");
       setIsSubmitting(false);

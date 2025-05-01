@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import { storeBookingSelection, validateBookingSelection } from "@/lib/bookingUtils";
 
 const BookingPage = () => {
   const [searchParams] = useSearchParams();
@@ -30,9 +31,13 @@ const BookingPage = () => {
   };
 
   const bookSlot = () => {
-    if (!selectedDate || !selectedTime) {
-      toast.error("Please select both date and time slot");
+    if (!validateBookingSelection(selectedDate, selectedTime)) {
       return;
+    }
+
+    // Store the booking selection in session storage
+    if (selectedCourse && selectedDate && selectedTime) {
+      storeBookingSelection(selectedCourse, selectedDate, selectedTime);
     }
 
     navigate(`/payment?course=${selectedCourse}&date=${selectedDate}&time=${selectedTime}`);

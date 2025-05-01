@@ -2,10 +2,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,9 +26,9 @@ const Header = () => {
       }`}
     >
       <div className="container flex items-center justify-between py-4">
-        <a href="#" className="text-2xl font-bold text-primary">
-          Portfolio
-        </a>
+        <Link to="/" className="text-2xl font-bold text-primary">
+          Chetan Chauhan
+        </Link>
         
         {/* Mobile Menu Button */}
         <Button
@@ -40,57 +42,75 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <a
-            href="#about"
-            className="text-muted-foreground hover:text-primary transition-colors"
+          <Link
+            to="/"
+            className={`transition-colors ${
+              location.pathname === "/" 
+                ? "text-primary font-medium" 
+                : "text-muted-foreground hover:text-primary"
+            }`}
           >
-            About
-          </a>
-          <a
-            href="#skills"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            Home
+          </Link>
+          <Link
+            to="/about"
+            className={`transition-colors ${
+              location.pathname === "/about" 
+                ? "text-primary font-medium" 
+                : "text-muted-foreground hover:text-primary"
+            }`}
           >
-            Skills
-          </a>
-          <a
-            href="#projects"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            About Us
+          </Link>
+          <Link
+            to="/contact"
+            className={`transition-colors ${
+              location.pathname === "/contact" 
+                ? "text-primary font-medium" 
+                : "text-muted-foreground hover:text-primary"
+            }`}
           >
-            Projects
-          </a>
-          <a href="#contact">
-            <Button>Contact</Button>
-          </a>
+            Contact
+          </Link>
         </nav>
         
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="absolute top-full left-0 right-0 bg-white shadow-lg py-4 md:hidden">
             <div className="flex flex-col items-center gap-4">
-              <a
-                href="#about"
-                className="text-muted-foreground hover:text-primary transition-colors"
+              <Link
+                to="/"
+                className={`transition-colors ${
+                  location.pathname === "/" 
+                    ? "text-primary font-medium" 
+                    : "text-muted-foreground hover:text-primary"
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                About
-              </a>
-              <a
-                href="#skills"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                Home
+              </Link>
+              <Link
+                to="/about"
+                className={`transition-colors ${
+                  location.pathname === "/about" 
+                    ? "text-primary font-medium" 
+                    : "text-muted-foreground hover:text-primary"
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Skills
-              </a>
-              <a
-                href="#projects"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                About Us
+              </Link>
+              <Link
+                to="/contact"
+                className={`transition-colors ${
+                  location.pathname === "/contact" 
+                    ? "text-primary font-medium" 
+                    : "text-muted-foreground hover:text-primary"
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Projects
-              </a>
-              <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
-                <Button>Contact</Button>
-              </a>
+                Contact
+              </Link>
             </div>
           </div>
         )}
