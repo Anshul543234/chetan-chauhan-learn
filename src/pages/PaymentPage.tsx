@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ const PaymentPage = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const razorpayFormRef = useRef<HTMLDivElement>(null);
 
   // Get course, date, and time from URL parameters or session storage
   const courseParam = searchParams.get("course");
@@ -33,6 +34,29 @@ const PaymentPage = () => {
     setTimeout(() => {
       setIsLoaded(true);
     }, 100);
+
+    // Load Razorpay script
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/payment-button.js";
+    script.setAttribute("data-payment_button_id", "pl_PoA2iQP5U14jBf");
+    script.async = true;
+    
+    // Add the script to the razorpayForm div once it exists
+    if (razorpayFormRef.current) {
+      // Clear any existing content in the div
+      razorpayFormRef.current.innerHTML = "";
+      // Create a form element for the Razorpay button
+      const form = document.createElement("form");
+      razorpayFormRef.current.appendChild(form);
+      form.appendChild(script);
+    }
+
+    // Cleanup function
+    return () => {
+      if (razorpayFormRef.current) {
+        razorpayFormRef.current.innerHTML = "";
+      }
+    };
   }, []);
 
   const validateEmail = (email: string) => {
@@ -40,30 +64,51 @@ const PaymentPage = () => {
     return emailPattern.test(email);
   };
 
-  const completePayment = () => {
+  const validateForm = () => {
     if (!name.trim()) {
       toast.error("Please enter your name");
-      return;
+      return false;
     }
 
     if (!email.trim()) {
       toast.error("Please enter your email");
-      return;
+      return false;
     }
 
     if (!validateEmail(email)) {
       toast.error("Please enter a valid email address");
-      return;
+      return false;
     }
 
-    setIsSubmitting(true);
+    return true;
+  };
 
-    // Simulate email sending (in a real app, you would use EmailJS or a similar service)
-    setTimeout(() => {
-      toast.success("Payment confirmation email has been sent!");
-      setIsSubmitting(false);
-      navigate("/booking-confirmation");
-    }, 1500);
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      // The actual payment handling is done by Razorpay
+      // We just need to make the Razorpay button visible or trigger a click
+      const razorpayButton = razorpayFormRef.current?.querySelector('button');
+      if (razorpayButton) {
+        razorpayButton.click();
+      } else {
+        toast.error("Payment button is not ready yet. Please try again.");
+      }
+    }
+  };
+
+  // For the demo purpose, simulate a successful payment
+  const simulateSuccessfulPayment = () => {
+    if (validateForm()) {
+      setIsSubmitting(true);
+
+      // Simulate email sending (in a real app, you would use EmailJS or a similar service)
+      setTimeout(() => {
+        toast.success("Payment confirmation email has been sent!");
+        setIsSubmitting(false);
+        navigate("/booking-confirmation");
+      }, 1500);
+    }
   };
 
   return (
@@ -95,7 +140,7 @@ const PaymentPage = () => {
             </div>
           </div>
 
-          <div className="space-y-5">
+          <form onSubmit={handleFormSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -128,15 +173,30 @@ const PaymentPage = () => {
               />
             </div>
 
+            {/* Hidden Razorpay button container */}
+            <div ref={razorpayFormRef} className="hidden"></div>
+
+            {/* Custom button that will validate form and then trigger the Razorpay button */}
             <Button
+              type="submit"
               className="w-full py-6 mt-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all hover:scale-[1.02] animate-button flex items-center justify-center gap-2"
-              onClick={completePayment}
               disabled={isSubmitting}
             >
               <CreditCard className="h-5 w-5" />
               {isSubmitting ? "Processing Payment..." : "Pay ₹50 Now"}
             </Button>
-          </div>
+
+            {/* Alternative button for demo purposes */}
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                type="button"
+                onClick={simulateSuccessfulPayment}
+                className="w-full py-3 mt-2 bg-blue-500 hover:bg-blue-600 transition-all"
+              >
+                Simulate Successful Payment (Demo)
+              </Button>
+            )}
+          </form>
         </div>
       </main>
     </div>
